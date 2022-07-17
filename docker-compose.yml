@@ -35,17 +35,14 @@ services:
     working_dir: /var/www/public
     # restart: always
   mysql:
+    image: mariadb:10.4
     container_name: ${container_db}
-    image: mysql:5.7
+    # restart: always
     env_file: .env
     command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci','--default-authentication-plugin=mysql_native_password']
     volumes:
       - "./config/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql"
       - "./config/mysql:/etc/mysql/conf.d"
-    # ports:
-    #   - "3308:3306"
-    # working_dir: /home
-    # restart: always
   redis:
     container_name: ${container_redis}
     image: redis:alpine
@@ -72,6 +69,17 @@ services:
     networks:
       - default
     # restart: always
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - 8025:8025 # web ui
+    networks:
+      - default
+    # restart: always
+
 networks:
   default:
    name: development_network
